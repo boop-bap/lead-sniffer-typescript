@@ -53,12 +53,14 @@ const options = {
   renameHeaders: false,
 };
 
-const instructionsObj = JSON.parse(fs.readFileSync("defaultInstructions.json"));
+const instructionsObj = JSON.parse(
+  fs.readFileSync("json/defaultInstructions.json")
+);
 const userInstructionsObj = JSON.parse(
-  fs.readFileSync("userInstructionsSave.json")
+  fs.readFileSync("json/userInstructionsSave.json")
 );
 
-const { userInstructions } = userInstructionsObj;
+const { instructionsFromUser: userInstructions } = userInstructionsObj;
 
 const { headersToAdd, defaultInstructions } = instructionsObj;
 
@@ -208,7 +210,7 @@ const updateUserInstructions = (req, res) => {
     textToModify = textToModify.replace(placeholder, newUserInstructions[key]);
   }
 
-  fs.writeFileSync("userInstructionsSave.json", textToModify);
+  fs.writeFileSync("json/userInstructionsSave.json", textToModify);
 };
 
 app.get("/defaultInstructions", (req, res) => {
@@ -245,7 +247,7 @@ app.post("/upload", async (req, res) => {
 
         const csvToExport = createCSV(combinedArray);
 
-        const randomFileName = crypto.randomUUID(0, 1000000);
+        const randomFileName = crypto.randomUUID(0, 10000);
 
         res.setHeader(
           "Content-Disposition",
