@@ -1,0 +1,15 @@
+{
+  "headersToAdd": [
+    "Record ID",
+    "Alive",
+    "Catalogs/leaflets",
+    "Business type",
+    "Business model"
+  ],
+  "userInstructions": {
+    "Translation": "aadddddddddd",
+    "Catalogs/leaflets": "aaaa",
+    "Business type": "aaaa",
+    "Business model": "aaaa"
+  }
+}

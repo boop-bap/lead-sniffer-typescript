@@ -1,0 +1,21 @@
+{
+  "headersToAdd": [
+    "Record ID",
+    "Alive",
+    "Catalogs/leaflets",
+    "Business type",
+    "Business model"
+  ],
+  "instructionsFromUser": {
+    "Translation": "${Translation}",
+    "Catalogs/leaflets": "${Catalogs/leaflets}",
+    "Business type": "${Business type}",
+    "Business model": "${Business model}"
+  },
+  "defaultInstructions": {
+    "Translation": "If the webpage is not in english language then translate the questions to the website's language and search with them.",
+    "Catalogs/leaflets": "Check if the website has a somewhat monthly or more often updated catalog type.",
+    "Business type": " Check what type of a business it is, B2B(Business-to-Business), B2C(Business-to-Consumer), B2B and B2C, agency, if none apply then write none.",
+    "Business model": "Check what is their business model on all of the pages on the website. Can be one or more of these types: retail, e-commerce, stores, both e-commerce and stores."
+  }
+}

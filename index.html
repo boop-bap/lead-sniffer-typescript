@@ -3,6 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://cdns.iconmonstr.com/wp-content/releases/preview/2018/240/iconmonstr-random-thin.png"
+    />
     <title>File Upload Form</title>
   </head>
   <body>
@@ -21,71 +26,137 @@
       <h1>Instructions for the search</h1>
 
       <div class="textAreaBox">
-        <label for="leaflets"
+        <label for="Catalogs/leaflets"
           >Define how to search for leaflets/catalogs/brochures</label
         >
-        <textarea id="leaflets" name="leaflets" rows="10" cols="50"></textarea>
+        <textarea
+          id="Catalogs/leaflets"
+          name="Catalogs/leaflets"
+          rows="10"
+          cols="50"
+        ></textarea>
       </div>
       <div class="textAreaBox">
-        <label for="businessType"
+        <label for="Business type"
           >Define how to search for a business type/types</label
         >
         <textarea
-          id="businessType"
-          name="businessType"
+          id="Business type"
+          name="Business type"
           rows="10"
           cols="50"
         ></textarea>
       </div>
       <div class="textAreaBox">
-        <label for="businessModel"
+        <label for="Business model"
           >Define how to search for a business model/models:</label
         >
         <textarea
-          id="businessModel"
-          name="businessModel"
+          id="Business model"
+          name="Business model"
           rows="10"
           cols="50"
         ></textarea>
       </div>
       <div class="textAreaBox">
-        <label for="translation"
+        <label for="Translation"
           >Define to/how to translate the questions(optional)</label
         >
         <textarea
-          id="businessModel"
-          name="businessModel"
+          id="Translation"
+          name="Translation"
           rows="10"
           cols="50"
         ></textarea>
       </div>
-
-      <button>Update</button>
-      <button id="fetchButton">fetchButton</button>
     </form>
+
+    <button id="updateUserInstructions">
+      Save user instructions(saves to server)
+    </button>
+    <button id="loadDefault">Load default instructions</button>
+    <button id="loadSavedInstructions">Load saved instructions</button>
   </body>
 </html>
 
 <script>
   const textarea = document.querySelector("textarea");
 
-  const fetchButton = document
-    .querySelector("#fetchButton")
+  document
+    .querySelector("#loadDefault")
     .addEventListener("click", async (event) => {
       event.preventDefault();
 
-      // try {
-      //   const response = await fetch(
-      //     "http://localhost:3000/defaultInstructions"
-      //   );
-      //   if (!response.ok) {
-      //     throw new Error("Network response was not ok " + response.statusText);
-      //   }
-      //   const Instructions = await response.text();
-      //   textarea.value = Instructions;
-      // } catch (error) {
-      //   console.error("There was a problem with the fetch operation:", error);
-      // }
+      try {
+        const response = await fetch(
+          "http://localhost:3000/defaultInstructions"
+        );
+        if (!response.ok) {
+          throw new Error("Network response was not ok " + response.statusText);
+        }
+        const defaultSettings = JSON.parse(await response.text());
+        const allTextAreas = document.querySelectorAll("textarea");
+
+        allTextAreas.forEach((textArea) => {
+          textArea.value = defaultSettings[textArea.id];
+        });
+      } catch (error) {
+        console.error("There was a problem with the fetch operation:", error);
+      }
+    });
+
+  document
+    .querySelector("#updateUserInstructions")
+    .addEventListener("click", async (event) => {
+      event.preventDefault();
+
+      const objToSend = {};
+      const allTextAreas = document.querySelectorAll("textarea");
+
+      allTextAreas.forEach((textArea) => {
+        objToSend[textArea.id] = textArea.value;
+      });
+
+      try {
+        const response = await fetch(
+          "http://localhost:3000/updateUserInstructions",
+          {
+            method: "POST",
+            mode: "cors",
+            cache: "no-cache",
+            credentials: "same-origin",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(objToSend),
+          }
+        );
+      } catch (error) {
+        console.error("There was a problem with the fetch operation:", error);
+      }
+    });
+
+  document
+    .querySelector("#loadSavedInstructions")
+    .addEventListener("click", async (event) => {
+      event.preventDefault();
+
+      try {
+        const response = await fetch(
+          "http://localhost:3000/userSavedInstructions"
+        );
+        if (!response.ok) {
+          throw new Error("Network response was not ok " + response.statusText);
+        }
+        const defaultSettings = JSON.parse(await response.text());
+        const allTextAreas = document.querySelectorAll("textarea");
+
+        allTextAreas.forEach((textArea) => {
+          textArea.value = defaultSettings[textArea.id];
+        });
+      } catch (error) {
+        console.error("There was a problem with the fetch operation:", error);
+      }
     });
 </script>
 

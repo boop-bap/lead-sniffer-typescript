@@ -13,6 +13,8 @@ const app = express();
 const port = 3000;
 
 app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Initialize multer to handle file uploads in memory
 const storage = multer.memoryStorage();
@@ -51,44 +53,36 @@ const options = {
   renameHeaders: false,
 };
 
-const instructionsObject = JSON.parse(fs.readFileSync("instructions.json"));
+const instructionsObj = JSON.parse(fs.readFileSync("defaultInstructions.json"));
+const userInstructionsObj = JSON.parse(
+  fs.readFileSync("userInstructionsSave.json")
+);
 
-const { headersToAdd, instructionsSettings, defaultSettings } =
-  instructionsObject;
+const { userInstructions } = userInstructionsObj;
+
+const { headersToAdd, defaultInstructions } = instructionsObj;
 
 const getInstructions = () => {
-  let test = `
+  const instructions = `
 1. Include the id provided in the answer with the title of 'Record ID' and display it only here once. 
 
 2. Check if the website provided is online then display it with a title 'Alive' and the answer should be yes or no.
 
-3. ${defaultSettings["Translation"]}
+3. ${userInstructions["Translation"]} Answer titles must stay english.
 
-4. ${defaultSettings["Catalogs/leaflets"]}
+4. ${userInstructions["Catalogs/leaflets"]} Display it with a title of 'Catalogs/leaflets' and the answer should be yes or no.
 
-5  ${defaultSettings["Business type"]}
+5  ${userInstructions["Business type"]} Display it with a title of 'Business type' and use the provided types.
 
-6. ${defaultSettings["Business model"]}
+6. ${userInstructions["Business model"]} Display it with a title of 'Business model' and use all relevant provided types and nothing else.
+
+7. Do not display more information after all the checks.
+
+8. Return the answer as a JSON a simple JSON object.
 `;
 
-  return test;
+  return instructions;
 };
-
-// 1. If the webpage is not in english language then translate the questions to the website's language and search with them.
-
-// 2. Include the id provided in the answer with the title of 'Record ID' and display it only here once.
-
-// 3. Check if the website provided is online then display it with a title 'Alive' and the answer should be yes or no.
-
-// 4. Check if the website has a somewhat monthly or more often updated catalog type. Display it with a title of 'Catalogs/leaflets' and the answer should be yes or no.
-
-// 5. Check what type of a business it is, B2B(Business-to-Business), B2C(Business-to-Consumer), B2B and B2C, agency, if none apply then write none. Display it with a title of 'Business type' and use the provided types.
-
-// 6. Check what is their business model on all of the pages on the website. Can be one or more of these types: retail, e-commerce, stores, both e-commerce and stores. Display it with a title of 'Business model' and use all relevant provided types and nothing else.
-
-// 7. Do not display more information after all the checks.
-
-// 8. Return the answer as a JSON a simple JSON object"
 
 const runGPT = async (website, recordId) => {
   const chatCompletion = await openai.chat.completions.create({
@@ -96,7 +90,7 @@ const runGPT = async (website, recordId) => {
       {
         role: "system",
         name: "TestV1",
-        content: process.env.CHATGPT_REQUEST_TEXT,
+        content: getInstructions(),
       },
       {
         role: "user",
@@ -119,19 +113,19 @@ const runGPT = async (website, recordId) => {
   return objectToReturn;
 };
 
-// Function to get data from CSV
-const getDataFromCSV = (csvFilePath) => {
-  return new Promise((resolve, reject) => {
-    const results = [];
-    const readableStream = fs.createReadStream(csvFilePath);
+// Function to get data from a local CSV file using fastCsv
+// const getDataFromCSV = (csvFilePath) => {
+//   return new Promise((resolve, reject) => {
+//     const results = [];
+//     const readableStream = fs.createReadStream(csvFilePath);
 
-    fastCsv
-      .parseStream(readableStream, options)
-      .on("data", (data) => results.push(data))
-      .on("end", () => resolve(results))
-      .on("error", (err) => reject(err));
-  });
-};
+//     fastCsv
+//       .parseStream(readableStream, options)
+//       .on("data", (data) => results.push(data))
+//       .on("end", () => resolve(results))
+//       .on("error", (err) => reject(err));
+//   });
+// };
 
 const getLeadDataFromGPT = async (csvData) => {
   const gptPromises = csvData.map((item) => {
@@ -189,7 +183,7 @@ const createCSV = (data) => {
   // fs.writeFileSync(`test copy ${randomFileName}.csv`, csv);
 };
 
-// Function to get data from uploaded file
+// Function to get data from an uploaded file
 const getDataFromUploadedFile = (buffer) => {
   return new Promise((resolve, reject) => {
     const results = [];
@@ -205,13 +199,34 @@ const getDataFromUploadedFile = (buffer) => {
   });
 };
 
+const updateUserInstructions = (req, res) => {
+  const newUserInstructions = req.body;
+  let textToModify = JSON.stringify(instructionsObj);
+
+  for (let key in newUserInstructions) {
+    let placeholder = new RegExp(`\\$\\{${key}\\}`, "g");
+    textToModify = textToModify.replace(placeholder, newUserInstructions[key]);
+  }
+
+  fs.writeFileSync("userInstructionsSave.json", textToModify);
+};
+
 app.get("/defaultInstructions", (req, res) => {
-  console.log(123);
-  res.send(process.env.CHATGPT_REQUEST_TEXT);
+  res.send(defaultInstructions);
+  res.status(200);
+});
+
+app.get("/userSavedInstructions", (req, res) => {
+  res.send(userInstructions);
+  res.status(200);
+});
+
+app.post("/updateUserInstructions", (req, res) => {
+  updateUserInstructions(req, res);
+  res.status(200).send("Instructions updated successfully");
 });
 
 app.post("/upload", async (req, res) => {
-  console.log(req.body);
   try {
     upload(req, res, async (err) => {
       if (req.file === undefined) {

@@ -6,7 +6,7 @@
     "Business type",
     "Business model"
   ],
-  "instructionsSettings": {
+  "instructionsFromUser": {
     "Translation": "${translationInstructions}. Answer titles must stay english",
     "Catalogs/leaflets": "${catalogInstructions}. Display it with a title of 'Catalogs/leaflets' and the answer should be yes or no.",
     "Business type": "${businesTypeInstructions}. Display it with a title of 'Business type' and use the provided types.",
