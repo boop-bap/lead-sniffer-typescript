@@ -13,7 +13,7 @@
   <body>
     <h1 style="margin-top: 50px">Upload a file to edit</h1>
     <form
-      action="http://localhost:3000/upload"
+      action="https://nodeapi-gpt.onrender.com:10000/upload"
       method="post"
       enctype="multipart/form-data"
       accept=".csv"
@@ -89,7 +89,7 @@
 
       try {
         const response = await fetch(
-          "http://localhost:3000/defaultInstructions"
+          "https://nodeapi-gpt.onrender.com:10000/defaultInstructions"
         );
         if (!response.ok) {
           throw new Error("Network response was not ok " + response.statusText);
@@ -121,7 +121,7 @@
 
       try {
         const response = await fetch(
-          "http://localhost:3000/updateUserInstructions",
+          "https://nodeapi-gpt.onrender.com:10000/updateUserInstructions",
           {
             method: "POST",
             mode: "cors",
@@ -147,7 +147,7 @@
 
       try {
         const response = await fetch(
-          "http://localhost:3000/userSavedInstructions"
+          "https://nodeapi-gpt.onrender.com:10000/userSavedInstructions"
         );
         if (!response.ok) {
           throw new Error("Network response was not ok " + response.statusText);
