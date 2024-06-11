@@ -99,11 +99,11 @@ const getInstructions = () => {
 
 5  ${userInstructions["Business type"]} Display it with a title of 'Business type' and display the provided type, or multiple if there are multiple.
 
-6. ${userInstructions["Business model"]} Display it with a title of 'Business model' and use all relevant provided types and nothing else.
+6. ${userInstructions["Business model"]} Display it with a title of 'Business model' and use all relevant provided types in the answer and nothing else.
 
 7. Do not display more information after all the checks.
 
-8. Return the answer as a JSON a simple JSON object.
+8. Return the answer as a JSON simple JSON object.
 `;
 
   return instructions;
