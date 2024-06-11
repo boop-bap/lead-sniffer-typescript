@@ -126,7 +126,7 @@ const runGPT = async (website, recordId) => {
 //       {
 //         role: "system",
 //         name: "TestV1",
-//         content: `Search the web for news on recent AI developments`,
+//         content: `Search the web for news on recent AI developments and AI technologies.`,
 //       },
 //     ],
 //     temperature: 0.2,
