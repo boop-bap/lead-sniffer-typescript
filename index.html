@@ -12,10 +12,9 @@
   </head>
   <body>
     <h1 style="margin-top: 50px">Upload a file to edit</h1>
-    <button id="test">Test</button>
-
     <form
-      action="https://nodeapi-gpt.onrender.com:10000/upload"
+      id="form"
+      action="https://nodeapi-gpt.onrender.com/upload"
       method="post"
       enctype="multipart/form-data"
       accept=".csv"
@@ -23,7 +22,7 @@
       <label for="file">Choose a file:</label>
       <input type="file" id="file" name="file" required />
       <br /><br />
-      <button type="submit">Upload</button>
+      <button type="button" onclick="submitForm()">Upload</button>
 
       <h1>Instructions for the search</h1>
 
@@ -82,23 +81,37 @@
 </html>
 
 <script>
-  const textarea = document.querySelector("textarea");
+  const allTextAreas = document.querySelectorAll("textarea");
 
-  document.querySelector("#test").addEventListener("click", async (event) => {
-    event.preventDefault();
-    console.log(123123);
+  const submitForm = async () => {
+    await saveUserInstructions(true);
+
+    document.getElementById("form").submit();
+  };
+
+  const saveUserInstructions = async (isForm = false) => {
+    const objToSend = {};
+
+    allTextAreas.forEach((textArea) => {
+      objToSend[textArea.id] = textArea.value;
+    });
+
     try {
-      await fetch("https://nodeapi-gpt.onrender.com:10000/test", {
-        method: "GET",
-        credentials: "include", // Include cookies and other credentials
-      });
-      if (!response.ok) {
-        throw new Error("Network response was not ok " + response.statusText);
-      }
+      const response = await fetch(
+        "https://nodeapi-gpt.onrender.com/updateUserInstructions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(objToSend),
+        }
+      );
+      if (!isForm) window.alert("Instructions loaded");
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
     }
-  });
+  };
 
   document
     .querySelector("#loadDefault")
@@ -107,13 +120,12 @@
 
       try {
         const response = await fetch(
-          "https://nodeapi-gpt.onrender.com:10000/defaultInstructions"
+          "https://nodeapi-gpt.onrender.com/defaultInstructions"
         );
         if (!response.ok) {
           throw new Error("Network response was not ok " + response.statusText);
         }
         const defaultSettings = JSON.parse(await response.text());
-        const allTextAreas = document.querySelectorAll("textarea");
 
         allTextAreas.forEach((textArea) => {
           textArea.value = defaultSettings[textArea.id];
@@ -129,32 +141,8 @@
     .querySelector("#updateUserInstructions")
     .addEventListener("click", async (event) => {
       event.preventDefault();
-      const objToSend = {};
-      const allTextAreas = document.querySelectorAll("textarea");
 
-      allTextAreas.forEach((textArea) => {
-        objToSend[textArea.id] = textArea.value;
-      });
-
-      try {
-        const response = await fetch(
-          "https://nodeapi-gpt.onrender.com:10000/updateUserInstructions",
-          {
-            method: "POST",
-            mode: "cors",
-            cache: "no-cache",
-            credentials: "cross-origin",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(objToSend),
-          }
-        );
-        console.log(objToSend);
-        window.alert("Instructions loaded");
-      } catch (error) {
-        console.error("There was a problem with the fetch operation:", error);
-      }
+      await saveUserInstructions();
     });
 
   document
@@ -164,13 +152,13 @@
 
       try {
         const response = await fetch(
-          "https://nodeapi-gpt.onrender.com:10000/userSavedInstructions"
+          "https://nodeapi-gpt.onrender.com/userSavedInstructions"
         );
         if (!response.ok) {
           throw new Error("Network response was not ok " + response.statusText);
         }
         const userInstructions = JSON.parse(await response.text());
-        const allTextAreas = document.querySelectorAll("textarea");
+
         allTextAreas.forEach((textArea) => {
           textArea.value = userInstructions[textArea.id];
         });
