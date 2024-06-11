@@ -83,13 +83,47 @@
 <script>
   const allTextAreas = document.querySelectorAll("textarea");
 
-  const submitForm = async () => {
-    await saveUserInstructions(true);
+  const loadDefaultInstructions = async () => {
+    try {
+      const response = await fetch(
+        "https://nodeapi-gpt.onrender.com/defaultInstructions"
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok " + response.statusText);
+      }
+      const defaultSettings = JSON.parse(await response.text());
 
-    document.getElementById("form").submit();
+      allTextAreas.forEach((textArea) => {
+        textArea.value = defaultSettings[textArea.id];
+      });
+
+      window.alert("Instructions loaded");
+    } catch (error) {
+      console.error("There was a problem with the fetch operation:", error);
+    }
   };
 
-  const saveUserInstructions = async (isForm = false) => {
+  const loadSavedInstructions = async () => {
+    try {
+      const response = await fetch(
+        "https://nodeapi-gpt.onrender.com/userSavedInstructions"
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok " + response.statusText);
+      }
+      const userInstructions = JSON.parse(await response.text());
+
+      allTextAreas.forEach((textArea) => {
+        textArea.value = userInstructions[textArea.id];
+      });
+
+      window.alert("Instructions loaded");
+    } catch (error) {
+      console.error("There was a problem with the fetch operation:", error);
+    }
+  };
+
+  const updateUserInstructions = async (isForm = false) => {
     const objToSend = {};
 
     allTextAreas.forEach((textArea) => {
@@ -113,61 +147,26 @@
     }
   };
 
-  document
-    .querySelector("#loadDefault")
-    .addEventListener("click", async (event) => {
-      event.preventDefault();
+  const submitForm = async () => {
+    await saveUserInstructions(true);
 
-      try {
-        const response = await fetch(
-          "https://nodeapi-gpt.onrender.com/defaultInstructions"
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok " + response.statusText);
-        }
-        const defaultSettings = JSON.parse(await response.text());
+    document.getElementById("form").submit();
+  };
 
-        allTextAreas.forEach((textArea) => {
-          textArea.value = defaultSettings[textArea.id];
-        });
+  loadDefaultInstructions();
 
-        window.alert("Instructions loaded");
-      } catch (error) {
-        console.error("There was a problem with the fetch operation:", error);
-      }
-    });
+  const setListenerAndFunctions = async (id, functionToRun) => {
+    document
+      .querySelector(`#${id}`)
+      .addEventListener("click", async (event) => {
+        event.preventDefault();
+        await functionToRun();
+      });
+  };
 
-  document
-    .querySelector("#updateUserInstructions")
-    .addEventListener("click", async (event) => {
-      event.preventDefault();
-
-      await saveUserInstructions();
-    });
-
-  document
-    .querySelector("#loadSavedInstructions")
-    .addEventListener("click", async (event) => {
-      event.preventDefault();
-
-      try {
-        const response = await fetch(
-          "https://nodeapi-gpt.onrender.com/userSavedInstructions"
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok " + response.statusText);
-        }
-        const userInstructions = JSON.parse(await response.text());
-
-        allTextAreas.forEach((textArea) => {
-          textArea.value = userInstructions[textArea.id];
-        });
-
-        window.alert("Instructions loaded");
-      } catch (error) {
-        console.error("There was a problem with the fetch operation:", error);
-      }
-    });
+  setListenerAndFunctions("loadDefault", loadDefaultInstructions);
+  setListenerAndFunctions("loadSavedInstructions", loadSavedInstructions);
+  setListenerAndFunctions("updateUserInstructions", updateUserInstructions);
 </script>
 
 <style>
