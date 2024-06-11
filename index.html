@@ -86,7 +86,7 @@
 
   document.querySelector("#test").addEventListener("click", async (event) => {
     event.preventDefault();
-
+    console.log(123123);
     try {
       const response = await fetch(
         "https://nodeapi-gpt.onrender.com:10000/test",
