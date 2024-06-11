@@ -11,19 +11,9 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const allowedOrigins = [
-  "http://127.0.0.1:5500",
-  "https://boop-bap.github.io/gpt",
-];
 
 const corsOptions = {
-  origin: (origin, callback) => {
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: "https://boop-bap.github.io/gpt",
   methods: "GET,POST",
   allowedHeaders: "Content-Type,Authorization",
   credentials: true,
