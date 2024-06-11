@@ -139,7 +139,10 @@
     const objToSend = {};
 
     allTextAreas.forEach((textArea) => {
-      objToSend[textArea.id] = textArea.value;
+      objToSend[textArea.id] = textArea.value = textArea.value.replace(
+        /\n/g,
+        " "
+      );
     });
 
     try {

@@ -11,9 +11,19 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const allowedOrigins = [
+  "http://localhost:5500",
+  "https://boop-bap.github.io/gpt",
+];
 
 const corsOptions = {
-  origin: "https://boop-bap.github.io",
+  origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   methods: "GET,POST",
   allowedHeaders: "Content-Type,Authorization",
   credentials: true,
@@ -218,6 +228,7 @@ const getDataFromUploadedFile = (buffer) => {
 // Takes default and inserts user instructions in to ${key}
 const updateUserInstructions = (req) => {
   const newUserInstructions = req.body;
+
   let textToModify = JSON.stringify(defaultInstructionsObj);
 
   for (let key in newUserInstructions) {
