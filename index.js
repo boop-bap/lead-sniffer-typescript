@@ -11,6 +11,10 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+// const allowedOrigins = [
+//   "http://localhost:5500",
+//   "https://boop-bap.github.io/gpt",
+// ];
 
 const corsOptions = {
   origin: "*",
@@ -256,6 +260,11 @@ const updateUserInstructions = (req) => {
 
   userInstructions = userInstructionsObj.userInstructions;
 };
+
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+  res.status(200);
+});
 
 app.get("/defaultInstructions", (req, res) => {
   res.send(defaultInstructions);
