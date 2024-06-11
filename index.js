@@ -264,6 +264,11 @@ app.get("/defaultInstructions", (req, res) => {
   res.status(200);
 });
 
+app.get("/test", (req, res) => {
+  console.log("test");
+  res.status(200);
+});
+
 app.get("/userSavedInstructions", (req, res) => {
   res.send(userInstructions);
   res.status(200);
@@ -309,5 +314,5 @@ app.post("/upload", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`Server listening on port- ${PORT}`);
 });
