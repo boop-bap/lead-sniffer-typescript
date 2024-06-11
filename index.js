@@ -12,7 +12,12 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+const corsOptions = {
+  credentials: true,
+  origin: ["http://localhost:5500", "https://nodeapi-gpt.onrender.com"], // Whitelist the domains you want to allow
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

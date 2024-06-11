@@ -13,7 +13,7 @@
   <body>
     <h1 style="margin-top: 50px">Upload a file to edit</h1>
     <form
-      action="http://localhost:3000/upload"
+      action="https://nodeapi-gpt.onrender.com:10000/upload"
       method="post"
       enctype="multipart/form-data"
       accept=".csv"
@@ -89,7 +89,7 @@
 
       try {
         const response = await fetch(
-          "http://localhost:3000/defaultInstructions"
+          "https://nodeapi-gpt.onrender.com:10000/defaultInstructions"
         );
         if (!response.ok) {
           throw new Error("Network response was not ok " + response.statusText);
@@ -111,7 +111,6 @@
     .querySelector("#updateUserInstructions")
     .addEventListener("click", async (event) => {
       event.preventDefault();
-
       const objToSend = {};
       const allTextAreas = document.querySelectorAll("textarea");
 
@@ -121,19 +120,19 @@
 
       try {
         const response = await fetch(
-          "http://localhost:3000/updateUserInstructions",
+          "https://nodeapi-gpt.onrender.com:10000/updateUserInstructions",
           {
             method: "POST",
             mode: "cors",
             cache: "no-cache",
-            credentials: "same-origin",
+            credentials: "cross-origin",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify(objToSend),
           }
         );
-
+        console.log(objToSend);
         window.alert("Instructions loaded");
       } catch (error) {
         console.error("There was a problem with the fetch operation:", error);
@@ -147,7 +146,7 @@
 
       try {
         const response = await fetch(
-          "http://localhost:3000/userSavedInstructions"
+          "https://nodeapi-gpt.onrender.com:10000/userSavedInstructions"
         );
         if (!response.ok) {
           throw new Error("Network response was not ok " + response.statusText);
