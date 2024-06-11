@@ -13,7 +13,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
-  origin: "https://boop-bap.github.io/gpt",
+  origin: "https://boop-bap.github.io",
   methods: "GET,POST",
   allowedHeaders: "Content-Type,Authorization",
   credentials: true,
