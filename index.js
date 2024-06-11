@@ -53,28 +53,31 @@ const options = {
   renameHeaders: false,
 };
 
-const instructionsObj = JSON.parse(
+const defaultInstructionsObj = JSON.parse(
   fs.readFileSync("json/defaultInstructions.json")
 );
-const userInstructionsObj = JSON.parse(
+let userInstructionsObj = JSON.parse(
   fs.readFileSync("json/userInstructionsSave.json")
 );
 
-const { instructionsFromUser: userInstructions } = userInstructionsObj;
+let { userInstructions } = userInstructionsObj;
 
-const { headersToAdd, defaultInstructions } = instructionsObj;
+const { headersToAdd, defaultInstructions } = defaultInstructionsObj;
 
 const getInstructions = () => {
   const instructions = `
+
+0. If the website is restricted with robots.txt skip the checks and write blocked with a title of "Alive". Nothing else if this is the case.
+
 1. Include the id provided in the answer with the title of 'Record ID' and display it only here once. 
 
 2. Check if the website provided is online then display it with a title 'Alive' and the answer should be yes or no.
 
 3. ${userInstructions["Translation"]} Answer titles must stay english.
 
-4. ${userInstructions["Catalogs/leaflets"]} Display it with a title of 'Catalogs/leaflets' and the answer should be yes or no.
+4. ${userInstructions["Catalogs/leaflets"]} Display it with a title of 'Catalogs/leaflets' and the answer should be yes or no and nothing else.
 
-5  ${userInstructions["Business type"]} Display it with a title of 'Business type' and use the provided types.
+5  ${userInstructions["Business type"]} Display it with a title of 'Business type' and display the provided type, or multiple if there are multiple.
 
 6. ${userInstructions["Business model"]} Display it with a title of 'Business model' and use all relevant provided types and nothing else.
 
@@ -112,8 +115,36 @@ const runGPT = async (website, recordId) => {
     .trim();
   const objectToReturn = JSON.parse(answerResult);
 
+  console.log(objectToReturn);
+
   return objectToReturn;
 };
+
+// const test = async (website, recordId) => {
+//   const chatCompletion = await openai.chat.completions.create({
+//     messages: [
+//       {
+//         role: "system",
+//         name: "TestV1",
+//         content: `Search the web for news on recent AI developments`,
+//       },
+//     ],
+//     temperature: 0.2,
+//     max_tokens: 1024,
+//     top_p: 0.1,
+//     frequency_penalty: 1,
+//     presence_penalty: 0.1,
+//     model: "gpt-4o-2024-05-13",
+//   });
+
+//   const answerResult = chatCompletion.choices[0].message.content;
+
+//   console.log(answerResult);
+
+//   return "asda";
+// };
+
+// test();
 
 // Function to get data from a local CSV file using fastCsv
 // const getDataFromCSV = (csvFilePath) => {
@@ -201,9 +232,9 @@ const getDataFromUploadedFile = (buffer) => {
   });
 };
 
-const updateUserInstructions = (req, res) => {
+const updateUserInstructions = (req) => {
   const newUserInstructions = req.body;
-  let textToModify = JSON.stringify(instructionsObj);
+  let textToModify = JSON.stringify(defaultInstructionsObj);
 
   for (let key in newUserInstructions) {
     let placeholder = new RegExp(`\\$\\{${key}\\}`, "g");
@@ -211,6 +242,12 @@ const updateUserInstructions = (req, res) => {
   }
 
   fs.writeFileSync("json/userInstructionsSave.json", textToModify);
+
+  userInstructionsObj = JSON.parse(
+    fs.readFileSync("json/userInstructionsSave.json")
+  );
+
+  userInstructions = userInstructionsObj.userInstructions;
 };
 
 app.get("/defaultInstructions", (req, res) => {

@@ -6,7 +6,7 @@
     "Business type",
     "Business model"
   ],
-  "instructionsFromUser": {
+  "userInstructions": {
     "Translation": "${Translation}",
     "Catalogs/leaflets": "${Catalogs/leaflets}",
     "Business type": "${Business type}",
