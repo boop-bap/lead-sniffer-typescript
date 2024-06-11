@@ -111,7 +111,6 @@
     .querySelector("#updateUserInstructions")
     .addEventListener("click", async (event) => {
       event.preventDefault();
-
       const objToSend = {};
       const allTextAreas = document.querySelectorAll("textarea");
 
@@ -126,14 +125,14 @@
             method: "POST",
             mode: "cors",
             cache: "no-cache",
-            credentials: "same-origin",
+            credentials: "cross-origin",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify(objToSend),
           }
         );
-
+        console.log(objToSend);
         window.alert("Instructions loaded");
       } catch (error) {
         console.error("There was a problem with the fetch operation:", error);
