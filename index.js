@@ -12,13 +12,22 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const allowedOrigins = [
+  "http://localhost:5500",
+  "https://boop-bap.github.io/gpt",
+];
+
 const corsOptions = {
+  origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: "GET,POST,PUT,DELETE",
+  allowedHeaders: "Content-Type,Authorization",
   credentials: true,
-  origin: [
-    "http://localhost:5500",
-    "https://nodeapi-gpt.onrender.com",
-    "https://boop-bap.github.io/gpt",
-  ], // Whitelist the domains you want to allow
 };
 
 app.use(cors(corsOptions));
