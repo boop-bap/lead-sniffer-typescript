@@ -14,7 +14,7 @@
     <h1 style="margin-top: 50px">Upload a file to edit</h1>
     <form
       id="form"
-      action="http://localhost:3000/upload"
+      action="https://nodeapi-gpt.onrender.com/upload"
       method="post"
       enctype="multipart/form-data"
       accept=".csv"
@@ -90,7 +90,7 @@
 
     try {
       const response = await fetch(
-        "http://localhost:3000/defaultInstructions",
+        "https://nodeapi-gpt.onrender.com/defaultInstructions",
         {
           method: "GET",
           headers: {
@@ -118,7 +118,7 @@
 
     try {
       const response = await fetch(
-        "http://localhost:3000/userSavedInstructions",
+        "https://nodeapi-gpt.onrender.com/userSavedInstructions",
         {
           method: "GET",
           headers: {
@@ -155,7 +155,7 @@
 
     try {
       const response = await fetch(
-        "http://localhost:3000/updateUserInstructions",
+        "https://nodeapi-gpt.onrender.com/updateUserInstructions",
         {
           method: "POST",
           headers: {
