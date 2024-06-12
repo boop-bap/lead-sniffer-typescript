@@ -90,9 +90,9 @@ const getInstructions = () => {
 
   I need you to be very very sure(100%) with the answers without any speculation.
 
-0. If the website is restricted with robots.txt skip the checks and write blocked with a title of "Alive". No other checks should be performed if this is the case.
+0. If the website is restricted with robots.txt, or you cannot access the website/internet skip the checks and write blocked with a title of "Alive". No other checks should be performed if this is the case.
 
-1. Include the id provided in the answer with the title of "Record ID" and display it only here once. 
+1. It is very important to include the id provided in the answer with the title of "Record ID" and display it only here once. 
 
 2. Check if the website provided is online then display it with a title "Alive" and the answer should be yes or no. If No skip the checks.
 
@@ -108,7 +108,6 @@ const getInstructions = () => {
 
 8. Return the answer as a JSON simple JSON object.
 `;
-
   return instructions;
 };
 
@@ -130,17 +129,48 @@ const runGPT = async (website, recordId) => {
     top_p: 0.1, // alternative to sampling with temperature, called nucleus sampling
     frequency_penalty: 1, // Number between -2.0 and 2.0. Positive values penalize new tokens more frequently
     presence_penalty: 0.1, // Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far
-    model: "gpt-4o-2024-05-13",
+    model: "gpt-3.5-turbo",
+  });
+};
+
+const gptTest = async (website, recordId, instructions) => {
+  const chatCompletion = await openai.chat.completions.create({
+    messages: [
+      {
+        role: "system",
+        name: "TestV1",
+        content: `Website URL: ${website} Record ID: ${recordId} instructions ${instructions} Return the answer as a JSON simple JSON object. `,
+      },
+    ],
+    temperature: 0.5, // Higher values means the model will take more risks.
+    max_tokens: 1024, // The maximum number of tokens to generate in the completion.
+    top_p: 0.4, // alternative to sampling with temperature, called nucleus sampling
+    frequency_penalty: 1, // Number between -2.0 and 2.0. Positive values penalize new tokens more frequently
+    presence_penalty: 1, // Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far
+    model: "gpt-4o",
   });
 
   // The answer is in the form of a JSON object
   const answerResult = chatCompletion.choices[0].message.content
     .replace(/```json|```/g, "")
     .trim();
-  const objectToReturn = JSON.parse(answerResult);
-  console.log(objectToReturn);
-  return objectToReturn;
+
+  return answerResult;
 };
+
+const runLoopTest = async () => {
+  const promises = [];
+  for (const [key, value] of Object.entries(userInstructions)) {
+    promises.push(gptTest("https://www.bilka.dk/", "000111", value));
+
+    // const results = await Promise.all(gptPromises);
+  }
+
+  const results = await Promise.all(promises);
+  console.log(results);
+};
+
+runLoopTest();
 
 // Function to get data from a local CSV file using fastCsv
 // const getDataFromCSV = (csvFilePath) => {
