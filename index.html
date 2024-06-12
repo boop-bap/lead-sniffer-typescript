@@ -14,7 +14,7 @@
     <h1 style="margin-top: 50px">Upload a file to edit</h1>
     <form
       id="form"
-      action="https://nodeapi-gpt.onrender.com/upload"
+      action="http://localhost:3000/upload"
       method="post"
       enctype="multipart/form-data"
       accept=".csv"
@@ -22,7 +22,7 @@
       <label for="file">Choose a file:</label>
       <input type="file" id="file" name="file" required />
       <br /><br />
-      <button id="uploadBtn">Upload</button>
+      <button type="button" id="uploadBtn">Upload</button>
 
       <h1>Instructions for the search</h1>
 
@@ -72,11 +72,13 @@
       </div>
     </form>
 
-    <button id="updateUserInstructions">
+    <button type="button" id="updateUserInstructions">
       Save user instructions(saves to server)
     </button>
-    <button id="loadDefault">Load default instructions</button>
-    <button id="loadSavedInstructions">Load saved instructions</button>
+    <button type="button" id="loadDefault">Load default instructions</button>
+    <button type="button" id="loadSavedInstructions">
+      Load saved instructions
+    </button>
   </body>
 </html>
 
@@ -84,9 +86,11 @@
   const allTextAreas = document.querySelectorAll("textarea");
 
   const loadDefaultInstructions = async () => {
+    console.log(1);
+
     try {
       const response = await fetch(
-        "https://nodeapi-gpt.onrender.com/defaultInstructions",
+        "http://localhost:3000/defaultInstructions",
         {
           method: "GET",
           headers: {
@@ -110,9 +114,11 @@
   };
 
   const loadSavedInstructions = async () => {
+    console.log(2);
+
     try {
       const response = await fetch(
-        "https://nodeapi-gpt.onrender.com/userSavedInstructions",
+        "http://localhost:3000/userSavedInstructions",
         {
           method: "GET",
           headers: {
@@ -136,6 +142,8 @@
   };
 
   const updateUserInstructions = async (isForm = false) => {
+    console.log(3);
+
     const objToSend = {};
 
     allTextAreas.forEach((textArea) => {
@@ -147,7 +155,7 @@
 
     try {
       const response = await fetch(
-        "https://nodeapi-gpt.onrender.com/updateUserInstructions",
+        "http://localhost:3000/updateUserInstructions",
         {
           method: "POST",
           headers: {
@@ -164,19 +172,18 @@
 
   const submitForm = async () => {
     await updateUserInstructions(true);
-
+    console.log(123123123);
     document.querySelector("#form").submit();
   };
 
   loadDefaultInstructions();
 
   const setListenerAndFunctions = async (id, functionToRun) => {
-    document
-      .querySelector(`#${id}`)
-      .addEventListener("click", async (event) => {
-        event.preventDefault();
-        await functionToRun();
-      });
+    const btn = document.querySelector(`#${id}`);
+    btn.addEventListener("click", async (event) => {
+      event.preventDefault();
+      await functionToRun(event);
+    });
   };
 
   setListenerAndFunctions("uploadBtn", submitForm);

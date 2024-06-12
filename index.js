@@ -88,6 +88,8 @@ const { headersToAdd, defaultInstructions } = defaultInstructionsObj;
 const getInstructions = () => {
   const instructions = `
 
+  I need you to be very very sure(100%) with the answers without any speculation.
+
 0. If the website is restricted with robots.txt skip the checks and write blocked with a title of "Alive". No other checks should be performed if this is the case.
 
 1. Include the id provided in the answer with the title of "Record ID" and display it only here once. 
@@ -96,7 +98,7 @@ const getInstructions = () => {
 
 3. ${userInstructions["Translation"]} Answer titles must stay English.
 
-4. ${userInstructions["Catalogs/leaflets"]} Display it with the title "Catalogs/leaflets" and the answer should be Yes or No and nothing else.
+4. ${userInstructions["Catalogs/leaflets"]} Display the answer with the title "Catalogs/leaflets" there should only be one answer Yes or No and nothing else.
 
 5  ${userInstructions["Business type"]} Please display the type found with the title "Business type". Multiple business types may apply and nothing else.
 
@@ -104,7 +106,8 @@ const getInstructions = () => {
 
 7. Do not display more information after all the checks.
 
-8. Return the answer as a JSON simple JSON object.`;
+8. Return the answer as a JSON simple JSON object.
+`;
 
   return instructions;
 };
@@ -135,6 +138,7 @@ const runGPT = async (website, recordId) => {
     .replace(/```json|```/g, "")
     .trim();
   const objectToReturn = JSON.parse(answerResult);
+  console.log(objectToReturn);
   return objectToReturn;
 };
 
