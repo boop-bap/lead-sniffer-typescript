@@ -21,12 +21,15 @@ const corsOptions = {
   origin: (origin, callback) => {
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
+    } else if (origin === undefined) {
+      callback(null, { origin: true, methods: ["GET"] });
     } else {
-      callback(new Error("Not allowed by CORS"));
+      console.log(`Origin not allowed by CORS: ${origin}`);
+      callback(new Error(`Origin not allowed by CORS: ${origin}`), false);
     }
   },
-  methods: "GET,POST",
-  allowedHeaders: "Content-Type,Authorization",
+  methods: "GET, POST", // Specify allowed methods globally
+  allowedHeaders: "Content-Type, Authorization",
   credentials: true,
 };
 
@@ -104,9 +107,11 @@ const getInstructions = () => {
 
 6. ${userInstructions["Business model"]} Display it with the title "Business model". Multiple types may apply and nothing else.
 
-7. Do not display more information after all the checks.
+7. I need you to be very very sure(100%) with the answers without any speculation.
 
-8. Return the answer as a JSON simple JSON object.
+8. Do not display more information after all the checks.
+
+9. Return the answer as a simple JSON object.
 `;
   return instructions;
 };
