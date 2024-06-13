@@ -21,13 +21,15 @@ const corsOptions = {
   origin: (origin, callback) => {
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
+    } else if (!origin) {
+      callback(null, { origin: true, methods: ["GET"] });
     } else {
-      console.log(origin);
-      callback(new Error("Not allowed by CORS"));
+      console.log(`Origin not allowed by CORS: ${origin}`);
+      callback(null, { origin: true, methods: ["GET"] });
     }
   },
-  methods: "GET,POST",
-  allowedHeaders: "Content-Type,Authorization",
+  methods: "GET, POST", // Specify allowed methods globally
+  allowedHeaders: "Content-Type, Authorization",
   credentials: true,
 };
 
