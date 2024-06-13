@@ -30,45 +30,25 @@
         <label for="Catalogs/leaflets"
           >Define how to search for leaflets/catalogs/brochures</label
         >
-        <textarea
-          id="Catalogs/leaflets"
-          name="Catalogs/leaflets"
-          rows="10"
-          cols="50"
-        ></textarea>
+        <textarea id="Catalogs/leaflets" name="Catalogs/leaflets"></textarea>
       </div>
       <div class="textAreaBox">
         <label for="Business type"
           >Define how to search for a business type/types</label
         >
-        <textarea
-          id="Business type"
-          name="Business type"
-          rows="10"
-          cols="50"
-        ></textarea>
+        <textarea id="Business type" name="Business type"></textarea>
       </div>
       <div class="textAreaBox">
         <label for="Business model"
           >Define how to search for a business model/models:</label
         >
-        <textarea
-          id="Business model"
-          name="Business model"
-          rows="10"
-          cols="50"
-        ></textarea>
+        <textarea id="Business model" name="Business model"></textarea>
       </div>
       <div class="textAreaBox">
         <label for="Translation"
           >Define to/how to translate the questions(optional)</label
         >
-        <textarea
-          id="Translation"
-          name="Translation"
-          rows="10"
-          cols="50"
-        ></textarea>
+        <textarea id="Translation" name="Translation"></textarea>
       </div>
     </form>
 
@@ -86,8 +66,6 @@
   const allTextAreas = document.querySelectorAll("textarea");
 
   const loadDefaultInstructions = async () => {
-    console.log(1);
-
     try {
       const response = await fetch(
         "https://nodeapi-gpt.onrender.com/defaultInstructions",
@@ -114,8 +92,6 @@
   };
 
   const loadSavedInstructions = async () => {
-    console.log(2);
-
     try {
       const response = await fetch(
         "https://nodeapi-gpt.onrender.com/userSavedInstructions",
@@ -142,8 +118,6 @@
   };
 
   const updateUserInstructions = async (isForm = false) => {
-    console.log(3);
-
     const objToSend = {};
 
     allTextAreas.forEach((textArea) => {
@@ -172,7 +146,6 @@
 
   const submitForm = async () => {
     await updateUserInstructions(true);
-    console.log(123123123);
     document.querySelector("#form").submit();
   };
 

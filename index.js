@@ -22,6 +22,7 @@ const corsOptions = {
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.log(origin);
       callback(new Error("Not allowed by CORS"));
     }
   },
@@ -104,9 +105,11 @@ const getInstructions = () => {
 
 6. ${userInstructions["Business model"]} Display it with the title "Business model". Multiple types may apply and nothing else.
 
-7. Do not display more information after all the checks.
+7. I need you to be very very sure(100%) with the answers without any speculation.
 
-8. Return the answer as a JSON simple JSON object.
+8. Do not display more information after all the checks.
+
+9. Return the answer as a simple JSON object.
 `;
 
   return instructions;
