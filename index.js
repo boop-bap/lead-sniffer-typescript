@@ -24,8 +24,7 @@ const corsOptions = {
     } else if (!origin) {
       callback(null, { origin: true, methods: ["GET"] });
     } else {
-      console.log(`Origin not allowed by CORS: ${origin}`);
-      callback(null, { origin: true, methods: ["GET"] });
+      callback(new Error(`Not allowed by CORS - ${origin}`));
     }
   },
   methods: "GET, POST", // Specify allowed methods globally
