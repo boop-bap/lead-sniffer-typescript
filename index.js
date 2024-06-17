@@ -75,83 +75,54 @@ function checkFileType(file, cb) {
 }
 
 // Load default instructions
-const defaultInstructionsObj = JSON.parse(
-  fs.readFileSync("json/defaultInstructions.json")
-);
+const {
+  defaultInstructions,
+  userInstructions: userInstructionsToReplaceFromDefault,
+} = JSON.parse(fs.readFileSync("json/defaultInstructions.json"));
 
 // Load user instructions
-let userInstructionsObj = JSON.parse(
+let userInstructions = JSON.parse(
   fs.readFileSync("json/userInstructionsSave.json")
 );
 
-let { userInstructions } = userInstructionsObj;
-const { headersToAdd, defaultInstructions } = defaultInstructionsObj;
-
 // These are final instructions will go to ChatGPT
-const getInstructions = () => {
-  const instructions = `
 
-  I need you to be very very sure(100%) with the answers without any speculation.
-
-0. If the website is restricted with robots.txt, or you cannot access the website/internet skip the checks and write blocked with a title of "Alive". No other checks should be performed if this is the case.
+const getInstructions = (type, instructions) => {
+  const instructionsString = `
+I need you to be very very sure(100%) with the answers without any speculation.
 
 1. It is very important to include the id provided in the answer with the title of "Record ID" and display it only here once. 
 
-2. Check if the website provided is online then display it with a title "Alive" and the answer should be yes or no. If No skip the checks.
+2. Translate the parts of the instructions that tell you what to look for on the website language, but the titles and answers should stay English!
 
-3. ${userInstructions["Translation"]} Answer titles must stay English.
+3. ${instructions} Display the answer with the title of "${type}".
 
-4. ${userInstructions["Catalogs/leaflets"]} Display the answer with the title "Catalogs/leaflets" there should only be one answer Yes or No and nothing else.
+4. I need you to be very very sure(100%) with the answers without any speculation.
 
-5  ${userInstructions["Business type"]} Please display the type found with the title "Business type". Multiple business types may apply and nothing else.
+5. Do not display more information after all the checks.
 
-6. ${userInstructions["Business model"]} Display it with the title "Business model". Multiple types may apply and nothing else.
+6. Return the answer as a clean and valid JSON object.`;
 
-7. I need you to be very very sure(100%) with the answers without any speculation.
-
-8. Do not display more information after all the checks.
-
-9. Return the answer as a simple JSON object.
-`;
-  return instructions;
+  return instructionsString;
 };
 
-const runGPT = async (website, recordId) => {
+const runGPT = async (website, recordId, type, instructions) => {
   const chatCompletion = await openai.chat.completions.create({
     messages: [
       {
         role: "system",
         name: "TestV1",
-        content: getInstructions(),
+        content: getInstructions(type, instructions),
       },
       {
         role: "user",
         content: `Website URL: ${website} Record ID: ${recordId}`,
       },
     ],
-    temperature: 0.2, // Higher values means the model will take more risks.
-    max_tokens: 1024, // The maximum number of tokens to generate in the completion.
+    temperature: 0.1, // Higher values means the model will take more risks.
     top_p: 0.1, // alternative to sampling with temperature, called nucleus sampling
-    frequency_penalty: 1, // Number between -2.0 and 2.0. Positive values penalize new tokens more frequently
-    presence_penalty: 0.1, // Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far
-    model: "gpt-3.5-turbo",
-  });
-};
-
-const gptTest = async (website, recordId, instructions) => {
-  const chatCompletion = await openai.chat.completions.create({
-    messages: [
-      {
-        role: "system",
-        name: "TestV1",
-        content: `Website URL: ${website} Record ID: ${recordId} instructions ${instructions} Return the answer as a JSON simple JSON object. `,
-      },
-    ],
-    temperature: 0.5, // Higher values means the model will take more risks.
-    max_tokens: 1024, // The maximum number of tokens to generate in the completion.
-    top_p: 0.4, // alternative to sampling with temperature, called nucleus sampling
-    frequency_penalty: 1, // Number between -2.0 and 2.0. Positive values penalize new tokens more frequently
-    presence_penalty: 1, // Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far
+    frequency_penalty: 0, // Number between -2.0 and 2.0. Positive values penalize new tokens more frequently
+    presence_penalty: 0, // Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far
     model: "gpt-4o",
   });
 
@@ -160,22 +131,10 @@ const gptTest = async (website, recordId, instructions) => {
     .replace(/```json|```/g, "")
     .trim();
 
-  return answerResult;
+  console.log(answerResult);
+
+  return JSON.parse(answerResult);
 };
-
-const runLoopTest = async () => {
-  const promises = [];
-  for (const [key, value] of Object.entries(userInstructions)) {
-    promises.push(gptTest("https://www.bilka.dk/", "000111", value));
-
-    // const results = await Promise.all(gptPromises);
-  }
-
-  const results = await Promise.all(promises);
-  console.log(results);
-};
-
-runLoopTest();
 
 // Function to get data from a local CSV file using fastCsv
 // const getDataFromCSV = (csvFilePath) => {
@@ -191,33 +150,50 @@ runLoopTest();
 //   });
 // };
 
-// Used to run GPT on each website URL in the CSV
 const getLeadDataFromGPT = async (csvData) => {
-  const gptPromises = csvData.map((item) => {
+  const promises = csvData.map(async (item) => {
     const url = item["Website URL"];
     const recordId = item["Record ID"];
-    return runGPT(url, recordId);
+
+    return new Promise(async (resolve) => {
+      const gptPromises = [];
+
+      for (const type in userInstructions) {
+        const answerPromise = runGPT(
+          url,
+          recordId,
+          type,
+          userInstructions[type]
+        );
+
+        gptPromises.push(answerPromise);
+      }
+
+      const gptResults = await Promise.all(gptPromises);
+
+      resolve(gptResults);
+    });
   });
 
-  const results = await Promise.all(gptPromises);
-
-  return results;
+  return await Promise.all(promises);
 };
 
 const combineTwoDataArrays = (csvArray, gptArray) => {
   const combinedArray = [];
 
-  csvArray.map((csvArrayItem) => {
+  csvArray.forEach((csvArrayItem) => {
     const tempObj = csvArrayItem;
 
-    gptArray.map((leadItem) => {
-      if (leadItem["Record ID"] == csvArrayItem["Record ID"]) {
-        headersToAdd.forEach((columnName) => {
-          if (!tempObj[columnName]) {
-            tempObj[columnName] = leadItem[columnName];
+    gptArray.forEach((leadArrayItem) => {
+      leadArrayItem.forEach((leadItem) => {
+        if (leadItem["Record ID"] == csvArrayItem["Record ID"]) {
+          for (const type in userInstructions) {
+            if (!tempObj[type]) {
+              tempObj[type] = leadItem[type];
+            }
           }
-        });
-      }
+        }
+      });
     });
 
     combinedArray.push(tempObj);
@@ -268,7 +244,7 @@ const getDataFromUploadedFile = (buffer) => {
 const updateUserInstructions = (req) => {
   const newUserInstructions = req.body;
 
-  let textToModify = JSON.stringify(defaultInstructionsObj);
+  let textToModify = JSON.stringify(userInstructionsToReplaceFromDefault);
 
   for (let key in newUserInstructions) {
     let placeholder = new RegExp(`\\$\\{${key}\\}`, "g");
@@ -276,11 +252,9 @@ const updateUserInstructions = (req) => {
   }
   fs.writeFileSync("json/userInstructionsSave.json", textToModify);
 
-  userInstructionsObj = JSON.parse(
+  userInstructions = JSON.parse(
     fs.readFileSync("json/userInstructionsSave.json")
   );
-
-  userInstructions = userInstructionsObj.userInstructions;
 };
 
 //GET REQUESTS ---------------------------
@@ -314,7 +288,6 @@ app.post("/upload", async (req, res) => {
         const dataFromUploadedFile = await getDataFromUploadedFile(
           req.file.buffer
         );
-
         const chatGPTArray = await getLeadDataFromGPT(dataFromUploadedFile);
 
         const combinedArray = combineTwoDataArrays(
@@ -323,7 +296,6 @@ app.post("/upload", async (req, res) => {
         );
 
         const csvToExport = createCSV(combinedArray);
-
         const randomFileName = crypto.randomUUID(0, 10000);
 
         res.setHeader(
@@ -331,6 +303,7 @@ app.post("/upload", async (req, res) => {
           `attachment; filename="${randomFileName}"`
         );
         res.setHeader("Content-Type", "text/csv");
+
         res.status(200).send(csvToExport);
       }
     });

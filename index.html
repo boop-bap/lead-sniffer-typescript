@@ -14,7 +14,7 @@
     <h1 style="margin-top: 50px">Upload a file to edit</h1>
     <form
       id="form"
-      action="https://nodeapi-gpt.onrender.com/upload"
+      action="http://localhost:3000/upload"
       method="post"
       enctype="multipart/form-data"
       accept=".csv"
@@ -45,10 +45,10 @@
         <textarea id="Business model" name="Business model"></textarea>
       </div>
       <div class="textAreaBox">
-        <label for="Translation"
-          >Define to/how to translate the questions(optional)</label
+        <label for="Links"
+          >How to get links for leaflets/catalogs/brochures</label
         >
-        <textarea id="Translation" name="Translation"></textarea>
+        <textarea id="Links" name="Links"></textarea>
       </div>
     </form>
 
@@ -68,7 +68,7 @@
   const loadDefaultInstructions = async () => {
     try {
       const response = await fetch(
-        "https://nodeapi-gpt.onrender.com/defaultInstructions",
+        "http://localhost:3000/defaultInstructions",
         {
           method: "GET",
           headers: {
@@ -94,7 +94,7 @@
   const loadSavedInstructions = async () => {
     try {
       const response = await fetch(
-        "https://nodeapi-gpt.onrender.com/userSavedInstructions",
+        "http://localhost:3000/userSavedInstructions",
         {
           method: "GET",
           headers: {
@@ -129,7 +129,7 @@
 
     try {
       const response = await fetch(
-        "https://nodeapi-gpt.onrender.com/updateUserInstructions",
+        "http://localhost:3000/updateUserInstructions",
         {
           method: "POST",
           headers: {
@@ -145,11 +145,9 @@
   };
 
   const submitForm = async () => {
-    await updateUserInstructions(true);
+    // await updateUserInstructions(true);
     document.querySelector("#form").submit();
   };
-
-  loadDefaultInstructions();
 
   const setListenerAndFunctions = async (id, functionToRun) => {
     const btn = document.querySelector(`#${id}`);

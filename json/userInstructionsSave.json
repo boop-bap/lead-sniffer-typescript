@@ -1,21 +1,7 @@
 {
-  "headersToAdd": [
-    "Record ID",
-    "Alive",
-    "Catalogs/leaflets",
-    "Business type",
-    "Business model"
-  ],
-  "userInstructions": {
-    "Translation": "Please translate all checks into the specific terminology of the website's country language.",
-    "Catalogs/leaflets": "Please check the website and all its sub-pages only for Promotional Leaflets, Promotional Catalogs, or Promotional Brochures. Ensure that the promotional materials is published at minimum once a month or more often. Conduct a separate check on the website for each provided type.",
-    "Business type": "Please review the website to determine the type of business it represents. Identify whether it is B2B (Business-to-Business), B2C (Business-to-Consumer), both B2B and B2C, or an agency. If none of these categories apply, indicate 'Not Found'. Conduct a separate check for each type of business classification.",
-    "Business model": "Please review all pages on the website to determine their business model. Identify if the business model includes retail, e-commerce, physical stores, or a combination of both e-commerce and physical stores."
-  },
-  "defaultInstructions": {
-    "Translation": "Please translate all checks into the specific terminology of the website's country language.",
-    "Catalogs/leaflets": "Please check the website and all its sub-pages only for Promotional Leaflets, Promotional Catalogs, or Promotional Brochures. Ensure that the promotional materials is published at minimum once a month. Conduct a separate check on the website for each provided type.",
-    "Business type": "Please review the website to determine the type of business it represents. Identify whether it is B2B (Business-to-Business), B2C (Business-to-Consumer), both B2B and B2C, or an agency. If none of these categories apply, indicate 'Not Found'. Conduct a separate check for each type of business classification.",
-    "Business model": "Please review all pages on the website to determine their business model. Identify if the business model includes retail, e-commerce, physical stores, or a combination of both e-commerce and physical stores."
-  }
+  "Online": "Check if the website provided is online then display it with a title 'Online' and the answer should be yes or no.",
+  "Catalogs/leaflets": "Please review the website and all its sub-pages to identify any Promotional Leaflets, Promotional Catalogs, or Promotional Brochures. Confirm that these promotional materials are published at least once a month or more frequently. Do not include regular product listings. Your response should indicate whether such promotional materials are present by answering 'Yes' or 'No' for 'Catalogs/leaflets.'",
+  "Business type": "Please review the website to determine the type of business it represents. Identify whether it is B2B (Business-to-Business), B2C (Business-to-Consumer), both B2B and B2C, or an agency. If none of these categories apply, indicate 'Not Found'. Conduct a separate check for each type of business classification.",
+  "Business model": "Please review all pages on the website to determine their business model. Identify if the business model includes retail, e-commerce, physical stores, or a combination of both e-commerce and physical stores. Only include the types in the answer.",
+  "Links": "Please browse the website and all its sub-pages for links to Promotional Leaflets, Promotional Catalogs, or Promotional Brochures that are published minimum once a month or more often. Display the links with a title of 'Links' in one line as text. If a link is found on the website while browsing live then double check if the link works as it should and does not say not found, does not exists, 404, and similar, if it includes browse again for another link until you find something that meets the requirement. If it still does not work then do not display it."
 }
