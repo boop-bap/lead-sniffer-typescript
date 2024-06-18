@@ -2,10 +2,12 @@ import express from "express";
 import dotenv from "dotenv";
 import OpenAI from "openai";
 import fs from "fs";
-import fastCsv from "fast-csv";
 import multer from "multer";
 import stream from "stream";
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
+
+import * as fastCsv from "fast-csv";
+import { CsvDataItem } from "interfaces";
 
 dotenv.config();
 
@@ -18,12 +20,12 @@ const allowedOrigins = [
   "https://boop-bap.github.io",
 ];
 
-const corsOptions = {
-  origin: (origin: any, callback: any) => {
-    if (allowedOrigins.includes(origin)) {
+const corsOptions: CorsOptions = {
+  origin: (origin, callback) => {
+    if (origin === undefined) {
+      callback(null, false);
+    } else if (allowedOrigins.includes(origin)) {
       callback(null, true);
-    } else if (origin === undefined) {
-      callback(null, { origin: true, methods: ["GET"] });
     } else {
       console.log(`Origin not allowed by CORS: ${origin}`);
       callback(new Error(`Origin not allowed by CORS: ${origin}`), false);
@@ -144,11 +146,11 @@ const runGPT = async (website: string, recordId: string) => {
   });
 
   // The answer is in the form of a JSON object
-  const answerResult = chatCompletion?.choices?.[0] as any;
+  const answerResult = chatCompletion?.choices?.[0].message.content as string;
 
-  console.log(answerResult, "answerResult");
+  const finalAnswer = answerResult.replace(/```json|```/g, "").trim();
 
-  const objectToReturn = JSON.parse(answerResult);
+  const objectToReturn = JSON.parse(finalAnswer);
   return objectToReturn;
 };
 
@@ -167,8 +169,8 @@ const runGPT = async (website: string, recordId: string) => {
 // };
 
 // Used to run GPT on each website URL in the CSV
-const getLeadDataFromGPT = async (csvData: any) => {
-  const gptPromises = csvData.map((item: any) => {
+const getLeadDataFromGPT = async (csvData: CsvDataItem[]) => {
+  const gptPromises = csvData.map((item: CsvDataItem) => {
     const url = item["Website URL"];
     const recordId = item["Record ID"];
     return runGPT(url, recordId);
@@ -179,15 +181,18 @@ const getLeadDataFromGPT = async (csvData: any) => {
   return results;
 };
 
-const combineTwoDataArrays = (csvArray: any, gptArray: any) => {
-  const combinedArray = [] as any;
+const combineTwoDataArrays = (
+  csvArray: CsvDataItem[],
+  gptArray: CsvDataItem[]
+) => {
+  const combinedArray = [] as CsvDataItem[];
 
-  csvArray.map((csvArrayItem: any) => {
+  csvArray.map((csvArrayItem: CsvDataItem) => {
     const tempObj = csvArrayItem;
 
-    gptArray.map((leadItem: any) => {
+    gptArray.map((leadItem: CsvDataItem) => {
       if (leadItem["Record ID"] == csvArrayItem["Record ID"]) {
-        headersToAdd.forEach((columnName: any) => {
+        headersToAdd.forEach((columnName: string) => {
           if (!tempObj[columnName]) {
             tempObj[columnName] = leadItem[columnName];
           }
@@ -201,7 +206,7 @@ const combineTwoDataArrays = (csvArray: any, gptArray: any) => {
   return combinedArray;
 };
 
-const createCSV = (data: any) => {
+const createCSV = (data: CsvDataItem[]) => {
   const headers = Object.keys(data[0]);
   // Create a CSV string
   let csv = headers.join(",") + "\n";
@@ -226,16 +231,16 @@ const createCSV = (data: any) => {
 // Function to get data from a file that has been uploaded through a browser
 const getDataFromUploadedFile = (buffer: Buffer) => {
   return new Promise((resolve, reject) => {
-    const results = [] as any;
+    const results = [] as CsvDataItem[];
 
     const bufferStream = new stream.PassThrough();
     const readableStream = bufferStream.end(buffer);
 
     fastCsv
       .parseStream(readableStream, options)
-      .on("data", (data: any) => results.push(data))
+      .on("data", (data: CsvDataItem) => results.push(data))
       .on("end", () => resolve(results))
-      .on("error", (err: any) => reject(err));
+      .on("error", (err: Error) => reject(err));
   });
 };
 
@@ -286,11 +291,13 @@ app.post("/upload", async (req, res) => {
       if (req.file === undefined) {
         res.status(400).send("Error: No File Selected!");
       } else {
-        const dataFromUploadedFile = await getDataFromUploadedFile(
+        const dataFromUploadedFile = (await getDataFromUploadedFile(
           req.file.buffer
-        );
+        )) as CsvDataItem[];
 
-        const chatGPTArray = await getLeadDataFromGPT(dataFromUploadedFile);
+        const chatGPTArray: CsvDataItem[] = await getLeadDataFromGPT(
+          dataFromUploadedFile
+        );
 
         const combinedArray = combineTwoDataArrays(
           dataFromUploadedFile,
@@ -299,7 +306,7 @@ app.post("/upload", async (req, res) => {
 
         const csvToExport = createCSV(combinedArray);
 
-        const randomFileName = crypto.randomUUID();
+        const randomFileName: string = crypto.randomUUID();
 
         res.setHeader(
           "Content-Disposition",
