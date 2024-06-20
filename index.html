@@ -178,10 +178,7 @@
 
   const submitForm = async () => {
     await updateUserInstructions(true);
-    const form = document.querySelector("#form");
-    const formData = new FormData(form);
-
-    console.log(123);
+    document.querySelector("#form").submit();
   };
 
   // loadDefaultInstructions();
