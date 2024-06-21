@@ -15,7 +15,9 @@
     <div class="container">
       <h1>Upload a CSV file, or enter a link</h1>
 
-      <div id="loading-spinner" class="spinner"></div>
+      <a href="/yeslist.csv" download="yeslist.csv"
+        >Download checked yes list for testing</a
+      >
 
       <section class="check-website">
         <h2>Check the website</h2>
@@ -23,11 +25,12 @@
         <input id="urlInput" type="text" placeholder="Enter URL" />
         <button id="check">Run Check</button>
         <div id="websiteInfo"></div>
+        <div id="loading-spinner" class="spinner"></div>
       </section>
 
       <form
         id="form"
-        action="https://typechat-wnvw.onrender.com/upload"
+        action="http://localhost:3000/upload"
         method="post"
         enctype="multipart/form-data"
         accept=".csv"
@@ -94,14 +97,13 @@
     </div>
   </body>
 </html>
-
 <script>
   const allTextAreas = document.querySelectorAll("textarea");
 
   const loadDefaultInstructions = async () => {
     try {
       const response = await fetch(
-        "https://typechat-wnvw.onrender.com/defaultInstructions",
+        "http://localhost:3000/defaultInstructions",
         {
           method: "GET",
           headers: {
@@ -126,7 +128,7 @@
   const loadSavedInstructions = async () => {
     try {
       const response = await fetch(
-        "https://typechat-wnvw.onrender.com/userSavedInstructions",
+        "http://localhost:3000/userSavedInstructions",
         {
           method: "GET",
           headers: {
@@ -161,7 +163,7 @@
 
     try {
       const response = await fetch(
-        "https://typechat-wnvw.onrender.com/updateUserInstructions",
+        "http://localhost:3000/updateUserInstructions",
         {
           method: "POST",
           headers: {
@@ -211,7 +213,7 @@
     }
 
     try {
-      const response = await fetch("https://typechat-wnvw.onrender.com/check", {
+      const response = await fetch("http://localhost:3000/check", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -259,11 +261,12 @@
     font-family: Arial, sans-serif;
     background-color: #f4f4f9;
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
   }
 
   .container {
@@ -273,6 +276,8 @@
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     max-width: 800px;
     width: 100%;
+    overflow-y: auto;
+    max-height: 90vh; /* Adjust as needed to fit the viewport */
   }
 
   h1,
@@ -339,7 +344,6 @@
   .spinner {
     display: none;
     text-align: center;
-    margin: 100px 0;
   }
 
   .spinner::before {
@@ -349,6 +353,5 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     background-color: #f1f1f1;
-    margin-top: 40px;
   }
 </style>
