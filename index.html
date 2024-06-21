@@ -30,7 +30,7 @@
 
       <form
         id="form"
-        action="http://localhost:3000/upload"
+        action="https://typechat-wnvw.onrender.com/upload"
         method="post"
         enctype="multipart/form-data"
         accept=".csv"
@@ -103,7 +103,7 @@
   const loadDefaultInstructions = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/defaultInstructions",
+        "https://typechat-wnvw.onrender.com/defaultInstructions",
         {
           method: "GET",
           headers: {
@@ -128,7 +128,7 @@
   const loadSavedInstructions = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/userSavedInstructions",
+        "https://typechat-wnvw.onrender.com/userSavedInstructions",
         {
           method: "GET",
           headers: {
@@ -163,7 +163,7 @@
 
     try {
       const response = await fetch(
-        "http://localhost:3000/updateUserInstructions",
+        "https://typechat-wnvw.onrender.com/updateUserInstructions",
         {
           method: "POST",
           headers: {
@@ -213,7 +213,7 @@
     }
 
     try {
-      const response = await fetch("http://localhost:3000/check", {
+      const response = await fetch("https://typechat-wnvw.onrender.com/check", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
