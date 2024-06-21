@@ -22,7 +22,7 @@
         <label for="urlInput">URL</label>
         <input id="urlInput" type="text" placeholder="Enter URL" />
         <button id="check">Run Check</button>
-        <p id="websiteInfo"></p>
+        <div id="websiteInfo"></div>
       </section>
 
       <form
@@ -223,7 +223,15 @@
 
       console.log(responseObj, "responseObj");
 
-      websiteInfo.innerHTML = `Website: ${responseObj.url} |||||| Catalogs: ${responseObj.catalogs} ||||||  Business model: ${responseObj.model} ||||||  Online: ${responseObj.online} |||||| Business type: ${responseObj.type} `;
+      websiteInfo.innerHTML = `
+      <ul>
+        <li><strong>Website:</strong> ${responseObj.url}</li>
+        <li><strong>Catalogs:</strong> ${responseObj.catalogs}</li>
+        <li><strong>Business model:</strong> ${responseObj.model}</li>
+        <li><strong>Online:</strong> ${responseObj.online}</li>
+        <li><strong>Business type:</strong> ${responseObj.type}</li>
+     </ul>
+          `;
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
     } finally {
@@ -331,7 +339,7 @@
   .spinner {
     display: none;
     text-align: center;
-    margin: 20px 0;
+    margin: 100px 0;
   }
 
   .spinner::before {
@@ -341,5 +349,6 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     background-color: #f1f1f1;
+    margin-top: 40px;
   }
 </style>
