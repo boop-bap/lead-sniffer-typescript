@@ -37,7 +37,7 @@
 
       <form
         id="form"
-        action="https://typechat-wnvw.onrender.com/upload"
+        action="http://localhost:3000/upload"
         method="post"
         enctype="multipart/form-data"
         accept=".csv"
@@ -49,10 +49,12 @@
         <h2>Instructions for the Search</h2>
 
         <div class="textAreaBox">
-          <label for="catalogs">Search for leaflets/catalogs/brochures</label>
+          <label for="monthlyOrMoreCatalogs"
+            >Search for leaflets/catalogs/brochures</label
+          >
           <textarea
-            id="catalogs"
-            name="catalogs"
+            id="monthlyOrMoreCatalogs"
+            name="monthlyOrMoreCatalogs"
             placeholder="Enter search criteria..."
           ></textarea>
         </div>
@@ -70,22 +72,6 @@
             id="model"
             name="model"
             placeholder="Enter business model..."
-          ></textarea>
-        </div>
-        <div class="textAreaBox">
-          <label for="translation">Translate the questions (optional)</label>
-          <textarea
-            id="translation"
-            name="translation"
-            placeholder="Enter translation instructions..."
-          ></textarea>
-        </div>
-        <div class="textAreaBox">
-          <label for="catalogLinks">Specify what links to get and how</label>
-          <textarea
-            id="catalogLinks"
-            name="catalogLinks"
-            placeholder="Enter link criteria..."
           ></textarea>
         </div>
       </form>
@@ -110,7 +96,7 @@
   const loadDefaultInstructions = async () => {
     try {
       const response = await fetch(
-        "https://typechat-wnvw.onrender.com/defaultInstructions",
+        "http://localhost:3000/defaultInstructions",
         {
           method: "GET",
           headers: {
@@ -135,7 +121,7 @@
   const loadSavedInstructions = async () => {
     try {
       const response = await fetch(
-        "https://typechat-wnvw.onrender.com/userSavedInstructions",
+        "http://localhost:3000/userSavedInstructions",
         {
           method: "GET",
           headers: {
@@ -170,7 +156,7 @@
 
     try {
       const response = await fetch(
-        "https://typechat-wnvw.onrender.com/updateUserInstructions",
+        "http://localhost:3000/updateUserInstructions",
         {
           method: "POST",
           headers: {
@@ -210,7 +196,7 @@
     const websiteInfo = document.querySelector("#websiteInfo");
     const spinner = document.querySelector("#loading-spinner");
 
-    console.log(websiteInfo);
+    await updateUserInstructions(true);
 
     spinner.style.display = "block";
     if (!isValidURL(url)) {
@@ -220,7 +206,7 @@
     }
 
     try {
-      const response = await fetch("https://typechat-wnvw.onrender.com/check", {
+      const response = await fetch("http://localhost:3000/check", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -235,7 +221,7 @@
       websiteInfo.innerHTML = `
       <ul>
         <li><strong>Website:</strong> ${responseObj.url}</li>
-        <li><strong>Catalogs:</strong> ${responseObj.catalogs}</li>
+        <li><strong>Monthly or more often catalogs:</strong> ${responseObj.monthlyOrMoreCatalogs}</li>
         <li><strong>Business model:</strong> ${responseObj.model}</li>
         <li><strong>Online:</strong> ${responseObj.online}</li>
         <li><strong>Business type:</strong> ${responseObj.type}</li>
