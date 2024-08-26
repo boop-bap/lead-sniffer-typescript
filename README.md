@@ -1,64 +1,31 @@
-<img src="https://schertzanimalhospital.com/wp-content/uploads/2018/03/Schertz_iStock-836716796_medium-1024x639.jpg" alt="Logo of the project" align="right">
 
-# Lead Sniffer
+# Description
 
-A tool to analyze websites for specific business details like catalogs, business type, and model. It's useful for sniffing out potential clients. First, it browses the provided URLs with the given criteria and returns a detailed description of each site. Then, it analyzes the text to see if it meets the criteria and provides the results in the specified format.
+A monorepo structure based on clean architecture principles and RESTful API conventions. It consists of two main applications: API and BlazorApp. The project is designed to ensure a clear separation of concerns, maintainability, and scalability.
 
-## Installing / Getting started
+# Project Structure
 
-A quick introduction of the minimal setup you need to get going
+API
+Controllers: Contains the API controllers that handle HTTP requests and responses.
+Entities: Defines the core business entities used throughout the application.
+Interfaces: Contains the interfaces for the services and repositories, promoting dependency inversion.
+Services: Implements the business logic and operations.
+Repositories: Handles data access and storage operations.
+Program.cs: The entry point of the API application.
+build_output: Directory for build artifacts.
 
--- Create your own env file with your OPENAI_API_KEY and PORT
 
-```shell
-npm i
-```
+BlazorApp
+Pages: Contains the Razor pages for the Blazor application.
+Components: Reusable UI components for the Blazor application.
+Models: Defines the data models used in the Blazor application.
+wwwroot: Static files such as CSS, JavaScript, and images.
+Program.cs: The entry point of the Blazor application.
+build_output: Directory for build artifacts.
 
-```shell
-npm run dev
-```
 
-OR
+# GitHub Actions(exploring devops)
+The project includes a GitHub Actions workflow that automates the process of splitting branches for deployment as separate projects in to API and BlazorApp branches.
 
-```shell
-npm run start
-```
-
-npm run dev runs dev with --watch flag.
-
-## TS to JS guide
-
-```shell
-npm run build
-```
-
-OR
-
-```shell
-npm run start:build
-```
-
-to build and run js
-
-## Things to consider
-
-This is just the backend for handling provided XLSX files with "Website URL", "Record ID", and "Company name" headers(column names) only!
-The information is returned in XLSX format
-
-The front-end is included in the public folder of this repository.
-
-## Default headers(column names) and answers in output XLSX file
-
-Record ID
-
-Website URL
-
-Company name
-
-Online: "Yes" | "No"
-
-Type: "B2B" | "B2C" | "Both B2B and B2C" | "Agency"
-
-MonthlyOrMoreCatalogs: "Yes" | "No" | "Maybe | "Not sure"
-
-Model: "Retail"| "E-commerce"| "Both e-commerce and physical stores"| "Physical stores"
+# Debugging with VSCode
+The project is set up with a debugger configuration in Visual Studio Code, allowing to easily debug both the API and BlazorApp applications.
