@@ -1,8 +1,8 @@
 
 # Description
-A joke manager monorepo based on clean architecture principles and RESTful API conventions. It consists of two main applications: API and BlazorApp. The project is designed to ensure a clear separation of concerns, maintainability, and scalability.
+A joke manager monorepo built on C# that follows clean architecture principles and RESTful API conventions. It consists of two main applications: API and BlazorApp. The project is designed to ensure clear separation of concerns, maintainability, and scalability.
 
-Current functionality consists of adding and deleting jokes, and saving them in an SQL database through a UI.
+- Current functionality consists of adding and deleting jokes, and saving them in an SQL database through a UI.
 
 
 # Project Structure
